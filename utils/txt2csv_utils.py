@@ -3,8 +3,6 @@ import csv
 import re
 import random
 
-UNKNOWN_TOKEN = '<Unknown>'
-
 def clean_string(input: str)->str:
     trimmed_str = input.strip()
     cleaned_str = ' '.join(trimmed_str.split())
@@ -43,7 +41,7 @@ def raw_extract_list(input: list[str])->list[list[str]]:
 def filter_father_name(input_str: str)->list[str, str]:
     """把比如“xx长子”这个变为[“xx”,“长子”],第二个可能为 None
     """
-    regex_pattern = r"[长次一二三四五六抚]?[子女]$"
+    regex_pattern = r"[大长次一二三四五六抚]?[子女]$"
 
     father_name, diwei = None, None
     result = re.findall(regex_pattern, input_str)
@@ -76,6 +74,20 @@ def csv_save(
         writer = csv.writer(file, delimiter=delimiter)
         writer.writerows([head] + content)
 
+def extract_csv(
+        fp: str,
+        encoding: str='utf-8',
+        delimiter: str=';',
+        newline: str='',
+    )->tuple[list[str], list[list[str]]]:
+    """ Extract info from csv 
+    return head and content
+    """
+    with open(fp, encoding=encoding, newline=newline) as file:
+        reader = csv.reader(file, delimiter=delimiter)
+        head = next(reader)
+        content = [row for row in reader]
+    return head, content
 
 
 if __name__ == '__main__':
